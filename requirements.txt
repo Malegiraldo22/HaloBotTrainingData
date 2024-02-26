@@ -1,6 +1,5 @@
 pandas
 gspread
-json
 os
 dotenv
 matplotlib
