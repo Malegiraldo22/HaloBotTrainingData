@@ -1,0 +1,10 @@
+google.oauth2
+pandas
+gspread
+json
+os
+dotenv
+matplotlib
+seaborn
+plotly
+streamlit
