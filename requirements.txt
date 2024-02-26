@@ -1,6 +1,6 @@
 pandas
 gspread
-dotenv
+python-dotenv
 matplotlib
 seaborn
 plotly
