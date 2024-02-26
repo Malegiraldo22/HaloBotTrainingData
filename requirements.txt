@@ -1,6 +1,5 @@
 pandas
 gspread
-os
 dotenv
 matplotlib
 seaborn
