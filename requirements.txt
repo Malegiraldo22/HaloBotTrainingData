@@ -7,4 +7,6 @@ plotly
 streamlit
 google-auth
 google-auth-oauthlib
-
+google-generativeai
+Pillow
+IPython
