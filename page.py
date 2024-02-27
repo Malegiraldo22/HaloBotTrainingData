@@ -26,7 +26,7 @@ st.title('Halo Bot Training Data')
 st.markdown("""
             Halo Infinite's Ranked Slayer test the players skill and weapon mastery. In order to improve the player must train, over and over. I decided to follow Shyway's [advice](https://www.youtube.com/watch?v=_NJ-PJF9lrc&t=0s) to do training sessions against 8 bots on ODST level in a Free For All battle. The idea is to do the most amount of kills in 15 minutes with the least amount of deaths. This should improve your aim and help you to react faster in a competitive match.
             As a way to follow my statistics, I built a spreadsheet on Google Sheets were I update the data manually as the training results are not saved on the player's data. Then the data is read in python and analyzed using pandas and plotly to generate plots.
-            In this way I can follow my stats and see if I have improved in the training sessions. A later update to this app should include the data of competitive matches that I play to see if there is a real improvement in my skills.
+            In this way I can follow my stats and see if I have improved in the training sessions. I used Gemini's API to analyze the plots and the data collected and generate advices to improve my skills. A later update to this app should include the data of competitive matches that I play to see if there is a real improvement in my skills.
 """)
 
 #Gemini AI
