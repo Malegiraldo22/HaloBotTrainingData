@@ -146,8 +146,12 @@ st.markdown(analyze_plot(accuracy_plot(data)))
 st.plotly_chart(damage_plot(data))
 st.markdown(analyze_plot(damage_plot(data)))
 
-st.plotly_chart(kd_ratio_plot(data))
-st.markdown(analyze_plot(kd_ratio_plot(data)))
+try:
+    st.plotly_chart(kd_ratio_plot(data))
+    st.markdown(analyze_plot(kd_ratio_plot(data)))
+except Exception as e:
+    st.plotly_chart(kd_ratio_plot(data))
+    st.markdown("Couldn't analyze the data")
 
 st.subheader("DataFrame")
 st.dataframe(data, hide_index=True, use_container_width=True)
