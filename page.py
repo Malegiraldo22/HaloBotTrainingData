@@ -144,17 +144,29 @@ def kd_ratio_plot(data):
     fig.update_layout(title='K/D Ratio', hovermode='x', plot_bgcolor='#01012B', width=1200, height=660)
     return fig
 
-st.plotly_chart(last_matches_plot(data))
-st.markdown(analyze_plot(last_matches_plot(data)))
+try:
+    st.plotly_chart(last_matches_plot(data))
+    st.markdown(analyze_plot(last_matches_plot(data)))
+except Exception as e:
+    st.markdown("Couldn't Analyze the data")
 
-st.plotly_chart(shots_fired_plot(data))
-st.markdown(analyze_plot(shots_fired_plot(data)))
+try:
+    st.plotly_chart(shots_fired_plot(data))
+    st.markdown(analyze_plot(shots_fired_plot(data)))
+except Exception as e:
+    st.markdown("Couldn't analyze the data")
 
-st.plotly_chart(accuracy_plot(data))
-st.markdown(analyze_plot(accuracy_plot(data)))
+try:
+    st.plotly_chart(accuracy_plot(data))
+    st.markdown(analyze_plot(accuracy_plot(data)))
+except Exception as e:
+    st.markdown("Couldn't analyze the data")
 
-st.plotly_chart(damage_plot(data))
-st.markdown(analyze_plot(damage_plot(data)))
+try:
+    st.plotly_chart(damage_plot(data))
+    st.markdown(analyze_plot(damage_plot(data)))
+except Exception as e:
+    st.markdown("Couldn't analyze the data")
 
 try:
     st.plotly_chart(kd_ratio_plot(data))
@@ -164,14 +176,17 @@ except Exception as e:
 
 st.subheader("DataFrame")
 st.dataframe(data, hide_index=True, use_container_width=True)
-response = text_model.generate_content(f"""
-Use the following information: {data}, also consider that the training sessions used to generate the data are 8 bots against
-and the player in a free for all match in Halo Infinite, following Halo Championship Series rules, and perform the following tasks:
-1. Perform a general analysis of the data.
-2. Extract the dates with the best and worst results.
-3. Generate tips that can help the player improve their individually skills.
-4. Considering the results obtained, is there any correlation between the data?
-5. Can you assume what style of play the player uses and how could it improve individually?
-6. How should the player reduce its negative stats without altering the individual playstyle assumed in point 5?
-7. Based on point 6, What strategies can the player use within the game to overcome challenges and What resources are available outside the game that can help the player learn and grow?""")
-st.markdown(response.text)
+try:
+    response = text_model.generate_content(f"""
+    Use the following information: {data}, also consider that the training sessions used to generate the data are 8 bots against
+    and the player in a free for all match in Halo Infinite, following Halo Championship Series rules, and perform the following tasks:
+    1. Perform a general analysis of the data.
+    2. Extract the dates with the best and worst results.
+    3. Generate tips that can help the player improve their individually skills.
+    4. Considering the results obtained, is there any correlation between the data?
+    5. Can you assume what style of play the player uses and how could it improve individually?
+    6. How should the player reduce its negative stats without altering the individual playstyle assumed in point 5?
+    7. Based on point 6, What strategies can the player use within the game to overcome challenges and What resources are available outside the game that can help the player learn and grow?""")
+    st.markdown(response.text)
+except Exception as e:
+    st.markdown("Couldn't analyze the data")
