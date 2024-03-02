@@ -249,12 +249,13 @@ with eng:
         Use the following information: {data}, also consider that the training sessions used to generate the data are 8 bots against
         the player in a free for all match in Halo Infinite, following Halo Championship Series rules, and perform the following tasks:
         1. Perform a general analysis of the data.
-        2. Extract the dates with the best and worst results.
-        3. Generate tips that can help the player improve their individually skills.
-        4. Considering the results obtained, is there any correlation between the data?
-        5. Can you assume what style of play the player uses and how could it improve individually?
-        6. How should the player reduce its negative stats without altering the individual playstyle assumed in point 5?
-        7. Based on point 6, What strategies can the player use within the game to overcome challenges and What resources are available outside the game that can help the player learn and grow?""")
+        2. For each day calculate the average for each statistic, round the average values.
+        3. Extract the dates with the best and worst results.
+        4. Generate tips that can help the player improve their individually skills.
+        5. Considering the results obtained, is there any correlation between the data?
+        6. Can you assume what style of play the player uses and how could it improve individually?
+        7. How should the player reduce its negative stats without altering the individual playstyle assumed in point 5?
+        8. Based on point 6, What strategies can the player use within the game to overcome challenges and What resources are available outside the game that can help the player learn and grow?""")
         st.markdown(response.text)
     except Exception as e:
         st.markdown("Couldn't analyze the data")
@@ -314,12 +315,13 @@ with spa:
         response = text_model.generate_content(f"""
         Utiliza la siguiente información: {data}. Ten en cuenta también que las sesiones de entrenamiento utilizadas para generar los datos son de 8 bots contra el jugador en una partida "todos contra todos" en Halo Infinite, siguiendo las reglas de la Halo Championship Series. Realiza las siguientes tareas:
         1. Realiza un análisis general de los datos.
-        2. Extrae las fechas con los mejores y peores resultados.
-        3. Genera consejos que puedan ayudar al jugador a mejorar sus habilidades individuales.
-        4. Teniendo en cuenta los resultados obtenidos, ¿hay alguna correlación entre los datos?
-        5. ¿Puedes suponer qué estilo de juego utiliza el jugador y cómo podría mejorar individualmente?
-        6. ¿Cómo debería el jugador reducir sus estadísticas negativas sin alterar el estilo de juego individual asumido en el punto 5?
-        7. Basado en el punto 6, ¿qué estrategias puede usar el jugador dentro del juego para superar desafíos? ¿Qué recursos están disponibles fuera del juego que pueden ayudar al jugador a aprender y crecer?""")
+        2. Para cada día calcula el promedio de las estadisticas, redondea los resultados.
+        3. Extrae las fechas con los mejores y peores resultados.
+        4. Genera consejos que puedan ayudar al jugador a mejorar sus habilidades individuales.
+        5. Teniendo en cuenta los resultados obtenidos, ¿hay alguna correlación entre los datos?
+        6. ¿Puedes suponer qué estilo de juego utiliza el jugador y cómo podría mejorar individualmente?
+        7. ¿Cómo debería el jugador reducir sus estadísticas negativas sin alterar el estilo de juego individual asumido en el punto 5?
+        8. Basado en el punto 6, ¿qué estrategias puede usar el jugador dentro del juego para superar desafíos? ¿Qué recursos están disponibles fuera del juego que pueden ayudar al jugador a aprender y crecer?""")
         st.markdown(response.text)
     except Exception as e:
         st.markdown("No es posible analizar los datos")
