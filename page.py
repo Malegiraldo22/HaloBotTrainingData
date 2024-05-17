@@ -24,8 +24,8 @@ st.set_page_config(
 
 #Gemini AI
 genai.configure(api_key=os.getenv('GOOGLE_AI_KEY'))
-text_model = genai.GenerativeModel('gemini-pro')
-img_model = genai.GenerativeModel('gemini-pro-vision')
+text_model = genai.GenerativeModel('gemini-1.5-pro-latest')
+img_model = genai.GenerativeModel('gemini-1.5-pro-latest')
 
 #Extracting the data from Google Sheets
 def data_from_gsheets():
