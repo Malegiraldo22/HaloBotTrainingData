@@ -92,25 +92,25 @@ def generate_plots(data):
     last_games = go.Figure()
     last_games.add_trace(go.Scatter(x=data['Date time'], y=data['Kills'], mode='lines+markers', name='Kills', line=dict(color='#FF2A6D')))
     last_games.add_trace(go.Scatter(x=data['Date time'], y=data['Deaths'], mode='lines+markers', name='Deaths', line=dict(color='#05D9E8')))
-    last_games.update_layout(title='Last Games', hovermode='x', plot_bgcolor='#01012B', width=1200, height=660, yaxis=dict(showgrid=False))
+    last_games.update_layout(title='Last Games', hovermode='x', plot_bgcolor='#01012B', width=1200, height=660, yaxis=dict(showgrid=True))
     
     shots_fired = go.Figure()
     shots_fired.add_trace(go.Scatter(x=data['Date time'], y=data['Shots Fired'], mode='lines+markers', name='Shots Fired', line=dict(color='#FF2A6D')))
     shots_fired.add_trace(go.Scatter(x=data['Date time'], y=data['Shots Hit'], mode='lines+markers', name='Shots Hit', line=dict(color='#05D9E8')))
-    shots_fired.update_layout(title='Shooting', hovermode='x', plot_bgcolor='#01012B', width=1200, height=660, yaxis=dict(showgrid=False))
+    shots_fired.update_layout(title='Shooting', hovermode='x', plot_bgcolor='#01012B', width=1200, height=660, yaxis=dict(showgrid=True))
 
     accuracy = go.Figure()
     accuracy.add_trace(go.Scatter(x=data['Date time'], y=data['Accuracy'], mode='lines+markers', name='Accuracy', line=dict(color='#FF2A6D')))
-    accuracy.update_layout(title='Accuracy (%)', hovermode='x', plot_bgcolor='#01012B', width=1200, height=660, yaxis=dict(showgrid=False))
+    accuracy.update_layout(title='Accuracy (%)', hovermode='x', plot_bgcolor='#01012B', width=1200, height=660, yaxis=dict(showgrid=True))
 
     damage = go.Figure()
     damage.add_trace(go.Scatter(x=data['Date time'], y=data['Damage Dealt'], mode='lines+markers', name='Damage Dealt', line=dict(color='#FF2A6D')))
     damage.add_trace(go.Scatter(x=data['Date time'], y=data['Damage Taken'], mode='lines+markers', name='Damage Taken', line=dict(color='#05D9E8')))
-    damage.update_layout(title='Damage', hovermode='x', plot_bgcolor='#01012B', width=1200, height=660, yaxis=dict(showgrid=False))
+    damage.update_layout(title='Damage', hovermode='x', plot_bgcolor='#01012B', width=1200, height=660, yaxis=dict(showgrid=True))
 
     kd = go.Figure()
     kd.add_trace(go.Scatter(x=data['Date time'], y=data['K/D Ratio'], mode='lines+markers', name='K/D Ratio', line=dict(color='#FF2A6D')))
-    kd.update_layout(title='K/D Ratio', hovermode='x', plot_bgcolor='#01012B', width=1200, height=660, yaxis=dict(showgrid=False))
+    kd.update_layout(title='K/D Ratio', hovermode='x', plot_bgcolor='#01012B', width=1200, height=660, yaxis=dict(showgrid=True))
 
     return last_games, shots_fired, accuracy, damage, kd
 ```
@@ -131,16 +131,15 @@ with spa:
 Using Gemini AI, the app provides a detailed analysis of your performance and offers personalized tips for improvement
 
 ```python
-try:
-        response = text_model.generate_content(f"""
+response = text_model.generate_content(f"""
         You are a videogame coach speciallized in Halo Infinite at competitive level, use the following information: 
         {data} and plots {last_games}, {shots_fired}, {accuracy}, {damage}, {kd} to analyze the player. 
         Also consider that the training sessions used to generate the data are 8 bots against the player in a free for all match in Halo Infinite, 
         following Halo Championship Series rules, and perform the following tasks:
         1. Perform a detailed analysis of the data.
         2. Perform a long and detailed analysis for each plot: {last_games}, {shots_fired}, {accuracy}, {damage}, {kd}
-        3. For each day calculate the average for each statistic, round the average values. Use {data} to make the calculations
-        4. Extract the dates with the best and worst results. Use the dataframe {data}
+        3. For each day calculate the average for each statistic, round the average values. Use {data} to make the calculations, show a summary instead of a table
+        4. Extract the dates with the best and worst results. Use the dataframe {data} and show a summary instead of a table
         5. Generate tips that can help the player improve their individually skills.
         6. Considering the results obtained, is there any correlation between the data?
         7. Can you assume what style of play the player uses and how could it improve individually?
@@ -148,9 +147,6 @@ try:
         9. Based on point 6, What strategies can the player use within the game to overcome challenges and What resources are available outside the game that can help the player learn and grow?
         10. Make a final thoughts where you present a full analysis of the data and plots and give your final conclusions
         """)
-        st.markdown(response.text)
-    except Exception as e:
-        st.markdown("Couldn't analyze the data")
 ```
 
 ## Benefits:

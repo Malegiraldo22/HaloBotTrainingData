@@ -1,3 +1,4 @@
+import time
 from google.oauth2 import service_account
 import pandas as pd
 import gspread
@@ -58,27 +59,46 @@ def generate_plots(data):
     last_games = go.Figure()
     last_games.add_trace(go.Scatter(x=data['Date time'], y=data['Kills'], mode='lines+markers', name='Kills', line=dict(color='#FF2A6D')))
     last_games.add_trace(go.Scatter(x=data['Date time'], y=data['Deaths'], mode='lines+markers', name='Deaths', line=dict(color='#05D9E8')))
-    last_games.update_layout(title='Last Games', hovermode='x', plot_bgcolor='#01012B', width=1200, height=660, yaxis=dict(showgrid=False))
+    last_games.update_layout(title='Last Games', hovermode='x', plot_bgcolor='#01012B', width=1200, height=660, yaxis=dict(showgrid=True))
     
     shots_fired = go.Figure()
     shots_fired.add_trace(go.Scatter(x=data['Date time'], y=data['Shots Fired'], mode='lines+markers', name='Shots Fired', line=dict(color='#FF2A6D')))
     shots_fired.add_trace(go.Scatter(x=data['Date time'], y=data['Shots Hit'], mode='lines+markers', name='Shots Hit', line=dict(color='#05D9E8')))
-    shots_fired.update_layout(title='Shooting', hovermode='x', plot_bgcolor='#01012B', width=1200, height=660, yaxis=dict(showgrid=False))
+    shots_fired.update_layout(title='Shooting', hovermode='x', plot_bgcolor='#01012B', width=1200, height=660, yaxis=dict(showgrid=True))
 
     accuracy = go.Figure()
     accuracy.add_trace(go.Scatter(x=data['Date time'], y=data['Accuracy'], mode='lines+markers', name='Accuracy', line=dict(color='#FF2A6D')))
-    accuracy.update_layout(title='Accuracy (%)', hovermode='x', plot_bgcolor='#01012B', width=1200, height=660, yaxis=dict(showgrid=False))
+    accuracy.update_layout(title='Accuracy (%)', hovermode='x', plot_bgcolor='#01012B', width=1200, height=660, yaxis=dict(showgrid=True))
 
     damage = go.Figure()
     damage.add_trace(go.Scatter(x=data['Date time'], y=data['Damage Dealt'], mode='lines+markers', name='Damage Dealt', line=dict(color='#FF2A6D')))
     damage.add_trace(go.Scatter(x=data['Date time'], y=data['Damage Taken'], mode='lines+markers', name='Damage Taken', line=dict(color='#05D9E8')))
-    damage.update_layout(title='Damage', hovermode='x', plot_bgcolor='#01012B', width=1200, height=660, yaxis=dict(showgrid=False))
+    damage.update_layout(title='Damage', hovermode='x', plot_bgcolor='#01012B', width=1200, height=660, yaxis=dict(showgrid=True))
 
     kd = go.Figure()
     kd.add_trace(go.Scatter(x=data['Date time'], y=data['K/D Ratio'], mode='lines+markers', name='K/D Ratio', line=dict(color='#FF2A6D')))
-    kd.update_layout(title='K/D Ratio', hovermode='x', plot_bgcolor='#01012B', width=1200, height=660, yaxis=dict(showgrid=False))
+    kd.update_layout(title='K/D Ratio', hovermode='x', plot_bgcolor='#01012B', width=1200, height=660, yaxis=dict(showgrid=True))
 
     return last_games, shots_fired, accuracy, damage, kd
+
+def stats_cal(data):
+    """
+    Function that calculates averages for each stat in the Datafrade
+
+    Args:
+        data (Dataframe): Dataframe with the data
+
+    Returns:
+        Variables with each average for each stat
+    """
+    avg_kills = data['Kills'].mean()
+    avg_deaths = data['Deaths'].mean()
+    avg_accuracy = data['Accuracy'].mean()
+    avg_damage_dealt = data['Damage Dealt'].mean()
+    avg_damage_taken = data['Damage Taken'].mean()
+    avg_kd = data['Kills'].mean()
+
+    return avg_kills, avg_deaths, avg_accuracy, avg_damage_dealt, avg_damage_taken, avg_kd
 
 #Language selection
 eng, spa = st.tabs(['English', 'Español'])
@@ -95,24 +115,98 @@ with eng:
     if st.button('Update Data'):
         data = data_from_gsheets()
 
+    avg_kills, avg_deaths, avg_accuracy, avg_damage_dealt, avg_damage_taken, avg_kd = stats_cal(data)
+
+    cards_container = st.container()
+    with cards_container:
+        col1, col2, col3 = st.columns(3)
+        with col1:
+            avg_kills_fig = go.Figure()
+            avg_kills_fig.add_trace(go.Indicator(
+                mode = "number",
+                value = round(avg_kills, 0),
+                title = {"text":"Average Kills<br><span style='font-size:0.8em'>"}
+            ))
+
+            avg_deaths_fig = go.Figure()
+            avg_deaths_fig.add_trace(go.Indicator(
+                mode = "number",
+                value = round(avg_deaths, 0),
+                title = {"text":"Average Deaths<br><span style='font-size:0.8em'>"}
+            ))
+
+            avg_kills_fig.update_layout(margin=dict(t=0,b=0), height=200)
+            avg_deaths_fig.update_layout(margin=dict(t=0,b=0), height=200)
+
+            st.plotly_chart(avg_kills_fig)
+            st.plotly_chart(avg_deaths_fig)
+
+        with col2:
+            avg_accuracy_fig = go.Figure()
+            avg_accuracy_fig.add_trace(go.Indicator(
+                mode = "number",
+                value = avg_accuracy,
+                number = {"suffix":"%"},
+                title = {"text":"Average Accuracy<br><span style='font-size:0.8em'>"}
+            ))
+
+            avg_kd_fig = go.Figure()
+            avg_kd_fig.add_trace(go.Indicator(
+                mode = "number",
+                value = avg_kd,
+                title = {"text":"Average Kill/Death Ratio<br><span style='font-size:0.8em'>"}
+            ))
+
+            avg_accuracy_fig.update_layout(margin=dict(t=0,b=0), height=200)
+            avg_kd_fig.update_layout(margin=dict(t=0,b=0), height=200)
+
+            st.plotly_chart(avg_accuracy_fig)
+            st.plotly_chart(avg_kd_fig)
+
+        with col3:
+            avg_damage_dealt_fig = go.Figure()
+            avg_damage_dealt_fig.add_trace(go.Indicator(
+                mode = "number",
+                value = avg_damage_dealt,
+                title = {"text":"Average Damage Dealt<br><span style='font-size:0.8em'>"}
+            ))
+
+            avg_damage_taken_fig = go.Figure()
+            avg_damage_taken_fig.add_trace(go.Indicator(
+                mode = "number",
+                value = avg_damage_taken,
+                title = {"text":"Average Damage Taken<br><span style='font-size:0.8em'>"}
+            ))
+
+            avg_damage_dealt_fig.update_layout(margin=dict(t=0,b=0), height=200)
+            avg_damage_taken_fig.update_layout(margin=dict(t=0,b=0), height=200)
+
+            st.plotly_chart(avg_damage_dealt_fig)
+            st.plotly_chart(avg_damage_taken_fig)
+
     #Plots
     st.subheader("Data Plots")
-    st.markdown("""
-                In this section I'll show plots that will allow to compare the statistics of each match played
-                """)
     
     last_games, shots_fired, accuracy, damage, kd = generate_plots(data)
 
-    st.plotly_chart(last_games)
-    st.plotly_chart(shots_fired)
-    st.plotly_chart(accuracy)
-    st.plotly_chart(damage)
-    st.plotly_chart(kd)
+    plots_container = st.container()
+    with plots_container:
+        col1, col2 = st.columns(2)
+
+        with col1:
+            st.plotly_chart(last_games)
+            st.plotly_chart(shots_fired)
+            st.plotly_chart(accuracy)
+        
+        with col2:
+            st.plotly_chart(damage)
+            st.plotly_chart(kd)
 
     st.subheader("DataFrame")
     st.dataframe(data, hide_index=True, use_container_width=True)
 
     try:
+        print("analyzing data...")
         response = text_model.generate_content(f"""
         You are a videogame coach speciallized in Halo Infinite at competitive level, use the following information: 
         {data} and plots {last_games}, {shots_fired}, {accuracy}, {damage}, {kd} to analyze the player. 
@@ -120,8 +214,8 @@ with eng:
         following Halo Championship Series rules, and perform the following tasks:
         1. Perform a detailed analysis of the data.
         2. Perform a long and detailed analysis for each plot: {last_games}, {shots_fired}, {accuracy}, {damage}, {kd}
-        3. For each day calculate the average for each statistic, round the average values. Use {data} to make the calculations
-        4. Extract the dates with the best and worst results. Use the dataframe {data}
+        3. For each day calculate the average for each statistic, round the average values. Use {data} to make the calculations, show a summary instead of a table
+        4. Extract the dates with the best and worst results. Use the dataframe {data} and show a summary instead of a table
         5. Generate tips that can help the player improve their individually skills.
         6. Considering the results obtained, is there any correlation between the data?
         7. Can you assume what style of play the player uses and how could it improve individually?
@@ -132,9 +226,10 @@ with eng:
         st.markdown(response.text)
     except Exception as e:
         st.markdown("Couldn't analyze the data")
+        print("Error: can't analyze data")
 
     with spa:
-        st.title('Datos de Entrenamiento con Bots en Halo')
+        st.title('Halo Bot Training Data')
         st.markdown("""
                 El modo Ranked Slayer de Halo Infinite pone a prueba la habilidad y el dominio de las armas de los jugadores. Para mejorar, el jugador debe entrenar una y otra vez. Decidí seguir el [consejo](https://www.youtube.com/watch?v=_NJ-PJF9lrc&t=0s) de Shyway de realizar sesiones de entrenamiento contra 8 bots en nivel ODST en una batalla Todos contra todos. La idea es hacer la mayor cantidad de bajas en 15 minutos con la menor cantidad de muertes. Esto debería mejorar la puntería y ayudar a reaccionar más rápido en una partida competitiva.
                 Como forma de seguir mis estadísticas, creé una hoja de cálculo en Google Sheets donde actualizo los datos manualmente, ya que los resultados del entrenamiento no se guardan en los datos del jugador. Luego, los datos se leen en Python y se analizan usando pandas y plotly para generar gráficos.
@@ -146,23 +241,100 @@ with eng:
         if st.button('Actualizar datos'):
             data = data_from_gsheets()
 
+        avg_kills, avg_deaths, avg_accuracy, avg_damage_dealt, avg_damage_taken, avg_kd = stats_cal(data)
+
+        cards_container = st.container()
+        with cards_container:
+            col1, col2, col3 = st.columns(3)
+            with col1:
+                avg_kills_fig = go.Figure()
+                avg_kills_fig.add_trace(go.Indicator(
+                    mode = "number",
+                    value = round(avg_kills,0),
+                    title = {"text":"Promedio de Asesinatos<br><span style='font-size:0.8em'>"}
+                ))
+
+                avg_deaths_fig = go.Figure()
+                avg_deaths_fig.add_trace(go.Indicator(
+                    mode = "number",
+                    value = round(avg_deaths,0),
+                    title = {"text":"Promedio de Muertes<br><span style='font-size:0.8em'>"}
+                ))
+
+                avg_kills_fig.update_layout(margin=dict(t=0,b=0), height=200)
+                avg_deaths_fig.update_layout(margin=dict(t=0,b=0), height=200)
+
+                st.plotly_chart(avg_kills_fig)
+                st.plotly_chart(avg_deaths_fig)
+
+            with col2:
+                avg_accuracy_fig = go.Figure()
+                avg_accuracy_fig.add_trace(go.Indicator(
+                    mode = "number",
+                    value = avg_accuracy,
+                    number = {"suffix":"%"},
+                    title = {"text":"Precisión Promedio<br><span style='font-size:0.8em'>"}
+                ))
+
+                avg_kd_fig = go.Figure()
+                avg_kd_fig.add_trace(go.Indicator(
+                    mode = "number",
+                    value = avg_kd,
+                    title = {"text":"Asesinatos/Muertes promedio<br><span style='font-size:0.8em'>"}
+                ))
+
+                avg_accuracy_fig.update_layout(margin=dict(t=0,b=0), height=200)
+                avg_kd_fig.update_layout(margin=dict(t=0,b=0), height=200)
+
+                st.plotly_chart(avg_accuracy_fig)
+                st.plotly_chart(avg_kd_fig)
+
+            with col3:
+                avg_damage_dealt_fig = go.Figure()
+                avg_damage_dealt_fig.add_trace(go.Indicator(
+                    mode = "number",
+                    value = avg_damage_dealt,
+                    title = {"text":"Promedio Daño Infligido<br><span style='font-size:0.8em'>"}
+                ))
+
+                avg_damage_taken_fig = go.Figure()
+                avg_damage_taken_fig.add_trace(go.Indicator(
+                    mode = "number",
+                    value = avg_damage_taken,
+                    title = {"text":"Promedio Daño Recibido<br><span style='font-size:0.8em'>"}
+                ))
+
+                avg_damage_dealt_fig.update_layout(margin=dict(t=0,b=0), height=200)
+                avg_damage_taken_fig.update_layout(margin=dict(t=0,b=0), height=200)
+
+                st.plotly_chart(avg_damage_dealt_fig)
+                st.plotly_chart(avg_damage_taken_fig)
+
         #Plots
         st.subheader("Data Plots")
-        st.markdown("""
-                    En esta sección mostraré gráficos que permitirán comparar las estadísticas de cada partida.
-                    """)
+
         last_games, shots_fired, accuracy, damage, kd = generate_plots(data)
 
-        st.plotly_chart(last_games)
-        st.plotly_chart(shots_fired)
-        st.plotly_chart(accuracy)
-        st.plotly_chart(damage)
-        st.plotly_chart(kd)
+        plots_container = st.container()
+        with plots_container:
+            col1, col2 = st.columns(2)
+
+            with col1:
+                st.plotly_chart(last_games)
+                st.plotly_chart(shots_fired)
+                st.plotly_chart(accuracy)
+            
+            with col2:
+                st.plotly_chart(damage)
+                st.plotly_chart(kd)
         
         st.subheader("DataFrame")
         st.dataframe(data, hide_index=True, use_container_width=True)
         
         try:
+            print("Esperando análisis...")
+            time.sleep(15)
+            print('Analizando datos...')
             response = text_model.generate_content(f"""
             Eres un entrenador de videojuegos especializado en Halo Infinite a nivel competitivo. Usa la siguiente información:
             {data} y gráficos {last_games}, {shots_fired}, {accuracy}, {damage}, {kd} para analizar al jugador.
@@ -170,8 +342,8 @@ with eng:
             siguiendo las reglas de la Serie de Campeonatos de Halo, y realiza las siguientes tareas:
             1. Realiza un análisis detallado de los datos.
             2. Realiza un análisis largo y detallado de cada gráfico: {last_games}, {shots_fired}, {accuracy}, {damage}, {kd}.
-            3. Para cada día, calcula el promedio de cada estadística y redondea los valores promedio. Usa {data} para hacer los cálculos.
-            4. Extrae las fechas con los mejores y peores resultados. Usa el dataframe {data}.
+            3. Para cada día, calcula el promedio de cada estadística y redondea los valores promedio. Usa {data} para hacer los cálculos. Escribe un resumen en vez de mostrar una tabla con los resultados
+            4. Extrae las fechas con los mejores y peores resultados. Usa el dataframe {data}. Escribe un resumen en vez de mostrar una tabla con los resultados
             5. Genera consejos que puedan ayudar al jugador a mejorar sus habilidades individuales.
             6. Considerando los resultados obtenidos, ¿existe alguna correlación entre los datos?
             7. ¿Puedes asumir qué estilo de juego utiliza el jugador y cómo podría mejorar individualmente?
@@ -181,4 +353,5 @@ with eng:
             """)
             st.markdown(response.text)
         except Exception as e:
+            print("Error al analizar datos")
             st.markdown("No he podido analizar los datos")
