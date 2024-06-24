@@ -1,83 +1,67 @@
 # Halo Bot Training Data Analysis
 
-## Descriptions
+## Overview
 
-This project is designed to help **Halo Infinite** players improve their skills in competitive matches by analyzing training sessions against bots. Following [Shyway's advice](https://www.youtube.com/watch?v=_NJ-PJF9lrc&t=0s), I conduct training sessions against 8 ODST level bots in Free For All matches. The goal is to achieve the most kills in 15 minutes with the least deaths possible.
+Welcome to the **Halo Bot Training Data Analysis** project! This project is designed to help you track and analyze your training sessions in Halo Infinite's Ranked Slayer mode. By following Shyway's [advice](https://www.youtube.com/watch?v=_NJ-PJF9lrc&t=0s), you'll engage in training sessions against 8 bots at ODST level in a Free For All battle, aiming to improve your kills while minimizing deaths over 15 minutes.
 
-I use **Google Sheets** to manually log data from each training session, as these results are not automatically saved in the player's stats. The data is then analyzed in **Python** using libraries like **pandas** and **plotly** to generate charts and perform detailed analysis with **Gemini AI**.
+This project leverages Google Sheets, Python, and powerful visualization tools to provide insightful data analysis and visualizations of your training performance.
 
-## Contents
+## Features
 
-- **Data Extraction**: Connect to Google Sheets to retrieve training session data.
-- **Chart Generation**: Visualize match statistics using plotly.
-- **Data Analysis**: Use Gemini AI to analyze charts and provide advice to improve player skills.
-- **User Interface**: Interactive interface built with Streamlit.
+- **Data Extraction**: Fetch training data directly from Google Sheets.
+- **Data Analysis**: Utilize pandas and plotly to process and visualize your performance data.
+- **Interactive Dashboards**: View interactive plots to track your progress over time.
+- **AI Insights**: Get detailed analysis and improvement tips using Gemini AI.
 
-## Installation
+## Getting Started
 
-1. **Clone the repository**:
+### Prerequisites
 
+Before you begin, ensure you have the following:
+
+- Python 3.7 or later installed on your system.
+- Access to Google Sheets API and Google Gemini API.
+- A Google Sheets file with your training data.
+- Environment variables set up for your Google API credentials.
+
+### Installation
+
+1. **Clone the Repository**:
     ```sh
-    git clone https://github.com/yourusername/halo-bot-training-data.git
+    git clone https://github.com/Malegiraldo22/halo-bot-training-data.git
     cd halo-bot-training-data
     ```
 
-2. **Create and activate a virtual environment**:
-
-    ```sh
-    python -m venv env
-    source env/bin/activate  # On Windows use `env\Scripts\activate`
-    ```
-
-3. **Install dependencies**:
-
+2. **Install Dependencies**:
     ```sh
     pip install -r requirements.txt
     ```
 
-4. **Set up environment variables**:
-   - Create a `.env` file in the project root with the following variables:
-
-    ```sh
-    GOOGLE_AI_KEY=your_google_ai_key
-    GOOGLE_JSON=your_google_service_account_json
-    GOOGLE_SHEET=your_google_sheet_url
+3. **Set Up Environment Variables**:
+    Create a `.env` file in the project directory with the following content:
+    ```env
+    GOOGLE_JSON='your_google_service_account_json'
+    GOOGLE_SHEET='your_google_sheet_url'
+    GOOGLE_AI_KEY='your_google_ai_key'
     ```
 
-## Usage
+### Usage
+Run the Streamlit app to start analyzing your Halo trainig data:
+```sh    
+streamlit run page.py
+```
 
-1. **Run the application**:
-
-    ```sh
-    streamlit run app.py
-    ```
-
-2. **Update data**:
-   - In the Streamlit interface, press the "Update Data" button to fetch the latest data from Google Sheets.
-
-3. **Visualization and analysis**:
-   - Browse through the generated charts and read the analyses provided by Gemini AI in both English and Spanish.
-
-## Features
-
-- **Data Extraction from Google Sheets**: Uses the Google API to fetch manually logged training data.
-- **Chart Generation**: Visualizes key statistics such as kills, deaths, accuracy, damage dealt and taken, and K/D ratio.
-- **Analysis with Gemini AI**: Provides detailed analysis of the generated charts and data, offering advice to improve player skills.
-- **Multilingual Interface**: Supports both English and Spanish, making it easy to understand the generated analyses and charts.
-
-## Main Code
-
-### Google Sheets Connection and Data Extraction
+## Detailed Description
+### Data extraction from Google Sheets
+The `data_from_gsheets` function extracts data from your Google Sheets File, and calculates de Kill/Death ratio to be used in the analysis
 
 ```python
-from google.oauth2 import service_account
-import pandas as pd
-import gspread
-import json
-import os
-from dotenv import load_dotenv
-
 def data_from_gsheets():
+    """Function that extracts data from a google sheets file using google's api
+
+    Returns:
+        DataFrame: DataFrame with the info in the file
+    """
     load_dotenv()
     google_json = os.getenv('GOOGLE_JSON')
     service_account_info = json.loads(google_json)
@@ -92,54 +76,82 @@ def data_from_gsheets():
     records_df['K/D Ratio'] = round(records_df.Kills / records_df.Deaths, 1)
     return records_df
 ```
-## Chart Generation with Plotly
-```python
-import plotly.graph_objects as go
 
-def last_matches_plot(data):
-    fig = go.Figure()
-    fig.add_trace(go.Scatter(x=data['Date time'], y=data['Kills'], mode='lines+markers', name='Kills', line=dict(color='#FF2A6D')))
-    fig.add_trace(go.Scatter(x=data['Date time'], y=data['Deaths'], mode='lines+markers', name='Deaths', line=dict(color='#05D9E8')))
-    fig.update_layout(title='Last Games', hovermode='x', plot_bgcolor='#01012B', width=1200, height=660)
-    return fig
+## Plot Generation
+The `generate_plots` function creates various plots to visualize your performance statistics such as kills, deaths, accuracy and damage deatl.
+```python
+def generate_plots(data):
+    """Function that generates a plot containing the results of the matches in the file
+
+    Args:
+        data (DataFrame): Dataframe that contains the information
+
+    Returns:
+        Plot: Plotly plot with the results of the match
+    """
+    last_games = go.Figure()
+    last_games.add_trace(go.Scatter(x=data['Date time'], y=data['Kills'], mode='lines+markers', name='Kills', line=dict(color='#FF2A6D')))
+    last_games.add_trace(go.Scatter(x=data['Date time'], y=data['Deaths'], mode='lines+markers', name='Deaths', line=dict(color='#05D9E8')))
+    last_games.update_layout(title='Last Games', hovermode='x', plot_bgcolor='#01012B', width=1200, height=660, yaxis=dict(showgrid=False))
+    
+    shots_fired = go.Figure()
+    shots_fired.add_trace(go.Scatter(x=data['Date time'], y=data['Shots Fired'], mode='lines+markers', name='Shots Fired', line=dict(color='#FF2A6D')))
+    shots_fired.add_trace(go.Scatter(x=data['Date time'], y=data['Shots Hit'], mode='lines+markers', name='Shots Hit', line=dict(color='#05D9E8')))
+    shots_fired.update_layout(title='Shooting', hovermode='x', plot_bgcolor='#01012B', width=1200, height=660, yaxis=dict(showgrid=False))
+
+    accuracy = go.Figure()
+    accuracy.add_trace(go.Scatter(x=data['Date time'], y=data['Accuracy'], mode='lines+markers', name='Accuracy', line=dict(color='#FF2A6D')))
+    accuracy.update_layout(title='Accuracy (%)', hovermode='x', plot_bgcolor='#01012B', width=1200, height=660, yaxis=dict(showgrid=False))
+
+    damage = go.Figure()
+    damage.add_trace(go.Scatter(x=data['Date time'], y=data['Damage Dealt'], mode='lines+markers', name='Damage Dealt', line=dict(color='#FF2A6D')))
+    damage.add_trace(go.Scatter(x=data['Date time'], y=data['Damage Taken'], mode='lines+markers', name='Damage Taken', line=dict(color='#05D9E8')))
+    damage.update_layout(title='Damage', hovermode='x', plot_bgcolor='#01012B', width=1200, height=660, yaxis=dict(showgrid=False))
+
+    kd = go.Figure()
+    kd.add_trace(go.Scatter(x=data['Date time'], y=data['K/D Ratio'], mode='lines+markers', name='K/D Ratio', line=dict(color='#FF2A6D')))
+    kd.update_layout(title='K/D Ratio', hovermode='x', plot_bgcolor='#01012B', width=1200, height=660, yaxis=dict(showgrid=False))
+
+    return last_games, shots_fired, accuracy, damage, kd
 ```
 
-## Analysis with Gemini AI
+## Interactive Dashboards With Streamlit
+The streamlit app provides an interactive interface to visualize your data. It includes tabs for English and Spanish, catering to a broader audience
 ```python
-import google.generativeai as genai
-from PIL import Image
-from io import BytesIO
-
-genai.configure(api_key=os.getenv('GOOGLE_AI_KEY'))
-img_model = genai.GenerativeModel('gemini-1.5-pro-latest')
-
-def create_image_from_plot(plot):
-    img_bytes = plot.to_image(format='png')
-    img_data = BytesIO(img_bytes)
-    img = Image.open(img_data)
-    return img
-
-def analyze_plot_spa(plot_function):
-    temp_plot = create_image_from_plot(plot_function)
-    promt = """
-            Use the plot and make an analysis about the data shown in it, using the next context:
-            1. The data is generated after a training match between a human and 8 bots in Halo infinite, following Halo Championship
-            series rules in a free for all match
-            2.  The focus of the training is to improve the skills of the player
-            3. The plot contains the results of all matches played so far
-            4. Have in mind that the first 5 matches were played against 4 bots instead of 8
-            5. Give advices to the player to improve his skills considering the data shown
-            Also, do not calculate averages to do the analysis
-            """
-    response = img_model.generate_content([promt, temp_plot], stream=True)
-    response.resolve()
-    return response.text
+eng, spa = st.tabs(['English', 'Español'])
+with eng:
+    st.title('Halo Bot Training Data')
+    # Further code for English tab...
+with spa:
+    st.title('Datos de Entrenamiento con Bots en Halo')
+    # Further code for Spanish tab...
 ```
 
-## Additional Features:
+## AI Analysis
+Using Gemini AI, the app provides a detailed analysis of your performance and offers personalized tips for improvement
 
-* Includes a user-friendly interface with tabs for English and Spanish analysis.
-* Provides options to dynamically update the data and regenerate the analysis.
+```python
+try:
+        response = text_model.generate_content(f"""
+        You are a videogame coach speciallized in Halo Infinite at competitive level, use the following information: 
+        {data} and plots {last_games}, {shots_fired}, {accuracy}, {damage}, {kd} to analyze the player. 
+        Also consider that the training sessions used to generate the data are 8 bots against the player in a free for all match in Halo Infinite, 
+        following Halo Championship Series rules, and perform the following tasks:
+        1. Perform a detailed analysis of the data.
+        2. Perform a long and detailed analysis for each plot: {last_games}, {shots_fired}, {accuracy}, {damage}, {kd}
+        3. For each day calculate the average for each statistic, round the average values. Use {data} to make the calculations
+        4. Extract the dates with the best and worst results. Use the dataframe {data}
+        5. Generate tips that can help the player improve their individually skills.
+        6. Considering the results obtained, is there any correlation between the data?
+        7. Can you assume what style of play the player uses and how could it improve individually?
+        8. How should the player reduce its negative stats without altering the individual playstyle assumed in point 5?
+        9. Based on point 6, What strategies can the player use within the game to overcome challenges and What resources are available outside the game that can help the player learn and grow?
+        10. Make a final thoughts where you present a full analysis of the data and plots and give your final conclusions
+        """)
+        st.markdown(response.text)
+    except Exception as e:
+        st.markdown("Couldn't analyze the data")
+```
 
 ## Benefits:
 
@@ -150,7 +162,8 @@ def analyze_plot_spa(plot_function):
 * Motivation and accountability for training efforts.
 
 ## Future updates:
-* Use of player information on matches against humans to analyze the impacts of the training, the data will be extracted from Halo Infinite's Service Records
+* **Competitive Match Data:** Use of player information on matches against humans to analyze the impacts of the training, the data will be extracted from Halo Infinite's Service Records
+* **Enhanced AI Analysis:** Improve the AI analysis for more precise and actionable feedback using video replays
 
 ## Contributions
-Contributions are welcome! Feel free to open an issue or submit a pull request to improve this project.
+Contributions are welcome! Feel free to open an issue or submit a pull request to improve this project or bug fixes.
