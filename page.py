@@ -96,7 +96,7 @@ def stats_cal(data):
     avg_accuracy = data['Accuracy'].mean()
     avg_damage_dealt = data['Damage Dealt'].mean()
     avg_damage_taken = data['Damage Taken'].mean()
-    avg_kd = data['Kills'].mean()
+    avg_kd = data['K/D Ratio'].mean()
 
     return avg_kills, avg_deaths, avg_accuracy, avg_damage_dealt, avg_damage_taken, avg_kd
 
